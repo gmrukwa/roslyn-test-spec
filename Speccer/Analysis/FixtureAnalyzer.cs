@@ -14,6 +14,12 @@ namespace Speccer.Analysis
         public ClassDescription ExtractSpecification(string testFixture)
         {
             var tree = CSharpSyntaxTree.ParseText(testFixture);
+            var compilation = CSharpCompilation.Create("TestedAssembly")
+                .AddReferences(
+                    MetadataReference.CreateFromFile(
+                        typeof(object).Assembly.Location))
+                .AddSyntaxTrees(tree);
+            var model = compilation.GetSemanticModel(tree);
 
             var namespaceName = NamespaceAnalyzer
                 .ExtractFixtureNamespace(tree)
