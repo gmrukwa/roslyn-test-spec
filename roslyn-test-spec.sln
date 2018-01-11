@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speccer", "Speccer\Speccer.csproj", "{EA8C7D81-0F74-4D07-B5A0-A67755F46385}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speccer.Test", "Speccer.Test\Speccer.Test.csproj", "{B733ED20-A2D5-4532-BA78-AF639FA32002}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{EA8C7D81-0F74-4D07-B5A0-A67755F46385}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA8C7D81-0F74-4D07-B5A0-A67755F46385}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA8C7D81-0F74-4D07-B5A0-A67755F46385}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B733ED20-A2D5-4532-BA78-AF639FA32002}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B733ED20-A2D5-4532-BA78-AF639FA32002}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B733ED20-A2D5-4532-BA78-AF639FA32002}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B733ED20-A2D5-4532-BA78-AF639FA32002}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
