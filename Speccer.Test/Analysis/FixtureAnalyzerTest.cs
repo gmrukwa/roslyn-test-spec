@@ -30,14 +30,12 @@ namespace Speccer.Test.Analysis
         }
 
         [TestMethod]
-        public void throws_not_implemented()
+        public void does_not_throw_on_sample_use()
         {
-            Assert.ThrowsException<NotImplementedException>(
-                () => _analyzer.ExtractSpecification("blah"));
+            _analyzer.ExtractSpecification(_sampleTestFile);
         }
 
         [TestMethod]
-        [Ignore]
         public void parses_namespace()
         {
             var description = _analyzer.ExtractSpecification(_sampleTestFile);
@@ -45,7 +43,6 @@ namespace Speccer.Test.Analysis
         }
 
         [TestMethod]
-        [Ignore]
         public void parses_name()
         {
             var description = _analyzer.ExtractSpecification(_sampleTestFile);
