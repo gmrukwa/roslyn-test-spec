@@ -37,8 +37,13 @@ namespace Speccer.Analysis
                 .AddSyntaxTrees(stubTree)
                 .AddSyntaxTrees(tree);
 
-            var diagnostics = compilation.GetDiagnostics();
-            
+            var missingMembers = compilation
+                .GetDiagnostics()
+                .Where(diagnostic => diagnostic.Id == "CS1061")
+                .Select(GetNameFromDiagnostic)
+                .Distinct()
+                .ToList();
+
             var functions = tree.GetFunctionCallsOn(compilation, className);
 
             return new ClassDescription(name: className,
@@ -51,6 +56,13 @@ namespace Speccer.Analysis
             var description = new ClassDescription(className, namespaceName, new PropertyDescription[]{}, new FunctionDescription[] { });
             var generator = new ClassGenerator(description);
             return generator.GenerateClass();
+        }
+
+        private string GetNameFromDiagnostic(Diagnostic diagnostic)
+        {
+            var span = diagnostic.Location.SourceSpan;
+            var sourceCode = diagnostic.Location.SourceTree.ToString();
+            return sourceCode.Substring(span.Start, span.Length);
         }
     }
 }
