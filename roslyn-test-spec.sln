@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speccer", "Speccer\Speccer.csproj", "{EA8C7D81-0F74-4D07-B5A0-A67755F46385}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Speccer", "Speccer\Speccer.csproj", "{EA8C7D81-0F74-4D07-B5A0-A67755F46385}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speccer.Test", "Speccer.Test\Speccer.Test.csproj", "{B733ED20-A2D5-4532-BA78-AF639FA32002}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Speccer.Test", "Speccer.Test\Speccer.Test.csproj", "{B733ED20-A2D5-4532-BA78-AF639FA32002}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpeccerNg", "SpeccerNg\SpeccerNg.csproj", "{6648848E-B09C-4C0B-8F91-C7B3177C5B7E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{B733ED20-A2D5-4532-BA78-AF639FA32002}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B733ED20-A2D5-4532-BA78-AF639FA32002}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B733ED20-A2D5-4532-BA78-AF639FA32002}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6648848E-B09C-4C0B-8F91-C7B3177C5B7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6648848E-B09C-4C0B-8F91-C7B3177C5B7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6648848E-B09C-4C0B-8F91-C7B3177C5B7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6648848E-B09C-4C0B-8F91-C7B3177C5B7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

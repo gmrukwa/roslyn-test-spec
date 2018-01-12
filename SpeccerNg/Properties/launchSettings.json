@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "SpeccerNg": {
+      "commandName": "Project",
+      "commandLineArgs": "SampleClassTest.cs",
+      "workingDirectory": "$(SolutionDir)"
+    }
+  }
+}
