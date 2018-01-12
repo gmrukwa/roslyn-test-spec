@@ -63,7 +63,7 @@ namespace Speccer.Test.Analysis
         public void default_function_return_type_is_void()
         {
             var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
-            Assert.AreEqual(typeof(void), description.Functions.First(f => f.Name == "DoSmth").ReturnType);
+            Assert.AreEqual("void", description.Functions.First(f => f.Name == "DoSmth").ReturnType);
         }
 
         [TestMethod]
@@ -71,7 +71,7 @@ namespace Speccer.Test.Analysis
         public void finds_return_types()
         {
             var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
-            Assert.AreEqual(typeof(int), description.Functions.First(f => f.Name == "DoSmthElse").ReturnType);
+            Assert.AreEqual("int", description.Functions.First(f => f.Name == "DoSmthElse").ReturnType);
         }
 
         [TestMethod]
@@ -87,7 +87,7 @@ namespace Speccer.Test.Analysis
         public void recognizes_argument_type()
         {
             var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
-            Assert.AreEqual(typeof(string), description.Functions.First(f => f.Name == "DoSmth").Arguments.First());
+            Assert.AreEqual("string", description.Functions.First(f => f.Name == "DoSmth").Arguments.First());
         }
 
         [TestMethod]
@@ -95,7 +95,7 @@ namespace Speccer.Test.Analysis
         public void default_argument_type_is_object()
         {
             var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
-            Assert.AreEqual(typeof(object), description.Functions.First(f => f.Name == "DoSmthElse").Arguments.First());
+            Assert.AreEqual("object", description.Functions.First(f => f.Name == "DoSmthElse").Arguments.First());
         }
 
         [TestMethod]
@@ -132,7 +132,7 @@ namespace Speccer.Test.Analysis
         public void finds_property_type()
         {
             var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
-            Assert.AreEqual(typeof(string), description.Properties.First(p => p.Name == "Blah").Type);
+            Assert.AreEqual("string", description.Properties.First(p => p.Name == "Blah").Type);
         }
 
         [TestMethod]
@@ -140,7 +140,7 @@ namespace Speccer.Test.Analysis
         public void property_is_object_by_default()
         {
             var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
-            Assert.AreEqual(typeof(object), description.Properties.First(p => p.Name == "Wololo").Type);
+            Assert.AreEqual("object", description.Properties.First(p => p.Name == "Wololo").Type);
         }
     }
 }
