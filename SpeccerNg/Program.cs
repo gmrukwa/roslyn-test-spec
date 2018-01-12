@@ -15,8 +15,7 @@ namespace SpeccerNg
                 return;
             }
             var fixtureContent = File.ReadAllText(args[0]);
-            var analyzer = new FixtureAnalyzer();
-            var description = analyzer.ExtractSpecification(fixtureContent);
+            var description = FixtureAnalyzer.ExtractSpecification(fixtureContent);
             var generator = new ClassGenerator(description);
             var code = generator.GenerateClass();
             var classPath = description.Name + ".cs";

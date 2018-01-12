@@ -12,9 +12,9 @@ using Speccer.Generation;
 
 namespace Speccer.Analysis
 {
-    public class FixtureAnalyzer
+    public static class FixtureAnalyzer
     {
-        public ClassDescription ExtractSpecification(string testFixture)
+        public static ClassDescription ExtractSpecification(string testFixture)
         {
             // STAGE 1 - RESOLVE CLASS & NAMESPACE NAME
             var tree = CSharpSyntaxTree.ParseText(testFixture);
@@ -73,7 +73,7 @@ namespace Speccer.Analysis
             return new ClassDescription(className, namespaceName, propertiesFound, functionsFound);
         }
 
-        private object ResolveSettableProperty(string propertyName, AssignmentExpressionSyntax node, SemanticModel semanticModel)
+        private static object ResolveSettableProperty(string propertyName, AssignmentExpressionSyntax node, SemanticModel semanticModel)
         {
             var returnType = "object";
             var varDeclaration = node.Ancestors().OfType<ExpressionStatementSyntax>().FirstOrDefault();
@@ -86,7 +86,7 @@ namespace Speccer.Analysis
             return new PropertyDescription(propertyName, returnType, true);
         }
 
-        private object ResolveFunctionInvocation(string functionName, InvocationExpressionSyntax node)
+        private static object ResolveFunctionInvocation(string functionName, InvocationExpressionSyntax node)
         {
             var returnType = "void";
             var varDeclaration = node.Ancestors().OfType<VariableDeclarationSyntax>().First();
@@ -99,7 +99,7 @@ namespace Speccer.Analysis
             return new FunctionDescription(functionName, returnType, new string[] { });
         }
 
-        private object ResolveReadOnlyProperty(string propertyName, SyntaxNode node, SemanticModel semanticModel)
+        private static object ResolveReadOnlyProperty(string propertyName, SyntaxNode node, SemanticModel semanticModel)
         {
             var returnType = "object";
             var varDeclaration = node.Ancestors().OfType<ExpressionStatementSyntax>().FirstOrDefault();
@@ -112,29 +112,21 @@ namespace Speccer.Analysis
             return new PropertyDescription(propertyName, returnType, false);
         }
 
-        private string buildTemporaryStub(string namespaceName, string className)
+        private static string buildTemporaryStub(string namespaceName, string className)
         {
             var description = new ClassDescription(className, namespaceName, new PropertyDescription[] { }, new FunctionDescription[] { });
             var generator = new ClassGenerator(description);
             return generator.GenerateClass();
         }
 
-        private string buildFunctionsOnlyStub(string namespaceName, string className,
-            IEnumerable<FunctionDescription> dummyFunctions)
-        {
-            var description = new ClassDescription(className, namespaceName, new PropertyDescription[] { }, dummyFunctions);
-            var generator = new ClassGenerator(description);
-            return generator.GenerateClass();
-        }
-
-        private string GetNameFromDiagnostic(Diagnostic diagnostic)
+        private static string GetNameFromDiagnostic(Diagnostic diagnostic)
         {
             var span = diagnostic.Location.SourceSpan;
             var sourceCode = diagnostic.Location.SourceTree.ToString();
             return sourceCode.Substring(span.Start, span.Length);
         }
 
-        private IEnumerable<SyntaxToken> NamesToTokens(SyntaxTree tree, IEnumerable<string> memberNames)
+        private static IEnumerable<SyntaxToken> NamesToTokens(SyntaxTree tree, IEnumerable<string> memberNames)
         {
             return memberNames.Select(name => ((CompilationUnitSyntax)tree.GetRoot()).DescendantTokens().First(token => token.Value is string && (string)token.Value == name)).ToList();
         }

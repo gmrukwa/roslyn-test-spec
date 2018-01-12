@@ -9,7 +9,6 @@ namespace Speccer.Test.Analysis
     [TestClass]
     public class FixtureAnalyzerTest
     {
-        private FixtureAnalyzer _analyzer;
         private static string _sampleTestFile;
 
         private static string FindTestFile(string startPath) => 
@@ -23,29 +22,23 @@ namespace Speccer.Test.Analysis
             _sampleTestFile = File.ReadAllText(FindTestFile("."));
         }
 
-        [TestInitialize]
-        public void SetUp()
-        {
-            _analyzer = new FixtureAnalyzer();
-        }
-
         [TestMethod]
         public void does_not_throw_on_sample_use()
         {
-            _analyzer.ExtractSpecification(_sampleTestFile);
+            FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
         }
 
         [TestMethod]
         public void parses_namespace()
         {
-            var description = _analyzer.ExtractSpecification(_sampleTestFile);
+            var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
             Assert.AreEqual("Sample.Namespace", description.Namespace);
         }
 
         [TestMethod]
         public void parses_name()
         {
-            var description = _analyzer.ExtractSpecification(_sampleTestFile);
+            var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
             Assert.AreEqual("SampleClass", description.Name);
         }
 
@@ -53,7 +46,7 @@ namespace Speccer.Test.Analysis
         [Ignore("Does not find a function in lambda.")]
         public void finds_functions()
         {
-            var description = _analyzer.ExtractSpecification(_sampleTestFile);
+            var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
             Assert.AreEqual(2, description.Functions.Count());
         }
 
@@ -61,7 +54,7 @@ namespace Speccer.Test.Analysis
         [Ignore("Does not find a function in lambda.")]
         public void finds_function_names()
         {
-            var description = _analyzer.ExtractSpecification(_sampleTestFile);
+            var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
             Assert.IsTrue(description.Functions.Any(f => f.Name == "DoSmth"));
             Assert.IsTrue(description.Functions.Any(f => f.Name == "DoSmthElse"));
         }
@@ -70,14 +63,14 @@ namespace Speccer.Test.Analysis
         [Ignore("Does not find a function in lambda.")]
         public void default_function_return_type_is_void()
         {
-            var description = _analyzer.ExtractSpecification(_sampleTestFile);
+            var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
             Assert.AreEqual(typeof(void), description.Functions.First(f => f.Name == "DoSmth").ReturnType);
         }
 
         [TestMethod]
         public void finds_return_types()
         {
-            var description = _analyzer.ExtractSpecification(_sampleTestFile);
+            var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
             Assert.AreEqual("int", description.Functions.First(f => f.Name == "DoSmthElse").ReturnType);
         }
 
@@ -85,7 +78,7 @@ namespace Speccer.Test.Analysis
         [Ignore]
         public void finds_arguments_number()
         {
-            var description = _analyzer.ExtractSpecification(_sampleTestFile);
+            var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
             Assert.AreEqual(1, description.Functions.First(f => f.Name == "DoSmth").Arguments.Count());
         }
 
@@ -93,7 +86,7 @@ namespace Speccer.Test.Analysis
         [Ignore]
         public void recognizes_argument_type()
         {
-            var description = _analyzer.ExtractSpecification(_sampleTestFile);
+            var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
             Assert.AreEqual(typeof(string), description.Functions.First(f => f.Name == "DoSmth").Arguments.First());
         }
 
@@ -101,21 +94,21 @@ namespace Speccer.Test.Analysis
         [Ignore]
         public void default_argument_type_is_object()
         {
-            var description = _analyzer.ExtractSpecification(_sampleTestFile);
+            var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
             Assert.AreEqual(typeof(object), description.Functions.First(f => f.Name == "DoSmthElse").Arguments.First());
         }
 
         [TestMethod]
         public void finds_properties()
         {
-            var description = _analyzer.ExtractSpecification(_sampleTestFile);
+            var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
             Assert.AreEqual(2, description.Properties.Count());
         }
 
         [TestMethod]
         public void finds_property_name()
         {
-            var description = _analyzer.ExtractSpecification(_sampleTestFile);
+            var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
             Assert.IsTrue(description.Properties.Any(p => p.Name == "Blah"));
             Assert.IsTrue(description.Properties.Any(p => p.Name == "Wololo"));
         }
@@ -123,28 +116,28 @@ namespace Speccer.Test.Analysis
         [TestMethod]
         public void property_is_readonly_by_default()
         {
-            var description = _analyzer.ExtractSpecification(_sampleTestFile);
+            var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
             Assert.IsFalse(description.Properties.First(p => p.Name == "Wololo").HasSetter);
         }
 
         [TestMethod]
         public void recognizes_settable_properties()
         {
-            var description = _analyzer.ExtractSpecification(_sampleTestFile);
+            var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
             Assert.IsTrue(description.Properties.First(p => p.Name == "Blah").HasSetter);
         }
 
         [TestMethod]
         public void finds_property_type()
         {
-            var description = _analyzer.ExtractSpecification(_sampleTestFile);
+            var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
             Assert.AreEqual("string", description.Properties.First(p => p.Name == "Blah").Type);
         }
 
         [TestMethod]
         public void property_is_object_by_default()
         {
-            var description = _analyzer.ExtractSpecification(_sampleTestFile);
+            var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
             Assert.AreEqual("object", description.Properties.First(p => p.Name == "Wololo").Type);
         }
     }
