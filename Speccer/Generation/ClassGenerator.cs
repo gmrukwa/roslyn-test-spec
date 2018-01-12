@@ -78,7 +78,7 @@ namespace Speccer.Generation
         private void AppendProperty(StringBuilder strBuilder, PropertyDescription propertyDescription)
         {
             string propertyStr = "public ";
-            propertyStr += propertyDescription.Type.Name + " ";
+            propertyStr += propertyDescription.Type + " ";
             propertyStr += propertyDescription.Name + " ";
             propertyStr += "{ get; ";
             if (propertyDescription.HasSetter)
@@ -91,14 +91,14 @@ namespace Speccer.Generation
         private void AppendMethod(StringBuilder strBuilder, FunctionDescription functionDescription)
         {
             string methodStr = "public ";
-            methodStr += functionDescription.ReturnType.Name + " ";
+            methodStr += functionDescription.ReturnType + " ";
             methodStr += functionDescription.Name + "(";
             if(functionDescription.Arguments.ToList().Count != 0)
             {
                 int argNum = 0;
                 foreach (var argType in functionDescription.Arguments)
                 {
-                    methodStr += argType.Name + $" arg{argNum}, ";
+                    methodStr += argType + $" arg{argNum}, ";
                     argNum++;
                 }
                 int lastCommaIdx = methodStr.LastIndexOf(",");

@@ -91,17 +91,25 @@ namespace Speccer.Analysis
 
         private object ResolveSettableProperty(string propertyName, AssignmentExpressionSyntax node)
         {
-            return new PropertyDescription(propertyName, typeof(object), true);
+            return new PropertyDescription(propertyName, "object", true);
         }
 
         private object ResolveFunctionInvocation(string functionName, InvocationExpressionSyntax node)
         {
-            return new FunctionDescription(functionName, typeof(void), new Type[] { });
+            var returnType = "void";
+            var varDeclaration = node.Ancestors().OfType<VariableDeclarationSyntax>().First();
+            if (varDeclaration != null)
+            {
+                var predefinedType = varDeclaration.ChildNodes().OfType<PredefinedTypeSyntax>().First();
+                returnType = predefinedType.Keyword.Value.ToString();
+            }
+
+            return new FunctionDescription(functionName, returnType, new string[] { });
         }
 
         private object ResolveReadOnlyProperty(string propertyName, SyntaxNode node)
         {
-            return new PropertyDescription(propertyName, typeof(object), false);
+            return new PropertyDescription(propertyName, "object", false);
         }
 
         private string buildTemporaryStub(string namespaceName, string className)

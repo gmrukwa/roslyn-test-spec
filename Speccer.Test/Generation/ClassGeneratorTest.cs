@@ -19,19 +19,19 @@ namespace Speccer.Test.Generation
             string nameStr = "ClassName";
             List<PropertyDescription> properties = new List<PropertyDescription>
             {
-                new PropertyDescription("Property1", typeof(long), false),
-                new PropertyDescription("Property2", typeof(string), true),
-                new PropertyDescription("Property3", typeof(bool), true)
+                new PropertyDescription("Property1", "long", false),
+                new PropertyDescription("Property2", "string", true),
+                new PropertyDescription("Property3", "bool", true)
             };
 
             List<FunctionDescription> functions = new List<FunctionDescription>
             {
-                new FunctionDescription("Method1", typeof(Object), new List<Type>()),
-                new FunctionDescription("Method2", typeof(void), new List<Type>
+                new FunctionDescription("Method1", "Object", new List<string>()),
+                new FunctionDescription("Method2", "void", new List<string>
                 {
-                    typeof(string),
-                    typeof(int),
-                    typeof(bool)
+                    "string",
+                    "int",
+                    "bool"
                 }),
             };
 

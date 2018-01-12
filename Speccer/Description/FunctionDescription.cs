@@ -7,10 +7,10 @@ namespace Speccer.Description
     public class FunctionDescription
     {
         public string Name { get; }
-        public Type ReturnType { get; }
-        public IEnumerable<Type> Arguments { get; }
+        public string ReturnType { get; }
+        public IEnumerable<string> Arguments { get; }
 
-        public FunctionDescription(string name, Type returnType, IEnumerable<Type> arguments)
+        public FunctionDescription(string name, string returnType, IEnumerable<string> arguments)
         {
             Name = name;
             ReturnType = returnType;
