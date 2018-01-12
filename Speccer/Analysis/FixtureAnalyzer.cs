@@ -18,6 +18,15 @@ namespace Speccer.Analysis
         {
             // STAGE 1 - RESOLVE CLASS & NAMESPACE NAME
             var tree = CSharpSyntaxTree.ParseText(testFixture);
+            var root = (CompilationUnitSyntax)tree.GetRoot();
+
+            var compilation = CSharpCompilation.Create("HelloWorld")
+                .AddReferences(
+                    MetadataReference.CreateFromFile(
+                        typeof(object).Assembly.Location))
+                .AddSyntaxTrees(tree);
+
+            var semanticModel = compilation.GetSemanticModel(tree);
 
             var namespaceName = NamespaceAnalyzer
                 .ExtractFixtureNamespace(tree)
@@ -53,10 +62,10 @@ namespace Speccer.Analysis
             var descriptions = missingMembers.Zip(parentsOfParentsOfParents, (name, node) =>
             {
                 if (node is AssignmentExpressionSyntax)
-                    return ResolveSettableProperty(name, (AssignmentExpressionSyntax)node);
+                    return ResolveSettableProperty(name, (AssignmentExpressionSyntax)node, semanticModel);
                 if (node is InvocationExpressionSyntax)
                     return ResolveFunctionInvocation(name, (InvocationExpressionSyntax)node);
-                return ResolveReadOnlyProperty(name, node);
+                return ResolveReadOnlyProperty(name, node, semanticModel);
             }).ToList();
             var propertiesFound = descriptions.OfType<PropertyDescription>().ToList();
             var functionsFound = descriptions.OfType<FunctionDescription>().ToList();
@@ -64,9 +73,17 @@ namespace Speccer.Analysis
             return new ClassDescription(className, namespaceName, propertiesFound, functionsFound);
         }
 
-        private object ResolveSettableProperty(string propertyName, AssignmentExpressionSyntax node)
+        private object ResolveSettableProperty(string propertyName, AssignmentExpressionSyntax node, SemanticModel semanticModel)
         {
-            return new PropertyDescription(propertyName, "object", true);
+            var returnType = "object";
+            var varDeclaration = node.Ancestors().OfType<ExpressionStatementSyntax>().FirstOrDefault();
+            if (varDeclaration != null)
+            {
+                var predefinedType = varDeclaration.ChildNodes().OfType<AssignmentExpressionSyntax>().First();
+                returnType = semanticModel.GetTypeInfo(predefinedType.Right).Type.ToString();
+            }
+
+            return new PropertyDescription(propertyName, returnType, true);
         }
 
         private object ResolveFunctionInvocation(string functionName, InvocationExpressionSyntax node)
@@ -82,14 +99,22 @@ namespace Speccer.Analysis
             return new FunctionDescription(functionName, returnType, new string[] { });
         }
 
-        private object ResolveReadOnlyProperty(string propertyName, SyntaxNode node)
+        private object ResolveReadOnlyProperty(string propertyName, SyntaxNode node, SemanticModel semanticModel)
         {
-            return new PropertyDescription(propertyName, "object", false);
+            var returnType = "object";
+            var varDeclaration = node.Ancestors().OfType<ExpressionStatementSyntax>().FirstOrDefault();
+            if (varDeclaration != null)
+            {
+                var predefinedType = varDeclaration.ChildNodes().OfType<AssignmentExpressionSyntax>().First();
+                returnType = semanticModel.GetTypeInfo(predefinedType.Right).Type.ToString();
+            }
+
+            return new PropertyDescription(propertyName, returnType, false);
         }
 
         private string buildTemporaryStub(string namespaceName, string className)
         {
-            var description = new ClassDescription(className, namespaceName, new PropertyDescription[]{}, new FunctionDescription[] { });
+            var description = new ClassDescription(className, namespaceName, new PropertyDescription[] { }, new FunctionDescription[] { });
             var generator = new ClassGenerator(description);
             return generator.GenerateClass();
         }

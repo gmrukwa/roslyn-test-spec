@@ -75,11 +75,10 @@ namespace Speccer.Test.Analysis
         }
 
         [TestMethod]
-        [Ignore]
         public void finds_return_types()
         {
             var description = _analyzer.ExtractSpecification(_sampleTestFile);
-            Assert.AreEqual(typeof(int), description.Functions.First(f => f.Name == "DoSmthElse").ReturnType);
+            Assert.AreEqual("int", description.Functions.First(f => f.Name == "DoSmthElse").ReturnType);
         }
 
         [TestMethod]
@@ -136,18 +135,17 @@ namespace Speccer.Test.Analysis
         }
 
         [TestMethod]
-        [Ignore]
         public void finds_property_type()
         {
             var description = _analyzer.ExtractSpecification(_sampleTestFile);
-            Assert.AreEqual(typeof(string), description.Properties.First(p => p.Name == "Blah").Type);
+            Assert.AreEqual("string", description.Properties.First(p => p.Name == "Blah").Type);
         }
 
         [TestMethod]
         public void property_is_object_by_default()
         {
             var description = _analyzer.ExtractSpecification(_sampleTestFile);
-            Assert.AreEqual(typeof(object), description.Properties.First(p => p.Name == "Wololo").Type);
+            Assert.AreEqual("object", description.Properties.First(p => p.Name == "Wololo").Type);
         }
     }
 }
