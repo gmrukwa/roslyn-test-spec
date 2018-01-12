@@ -62,31 +62,6 @@ namespace Speccer.Analysis
             var functionsFound = descriptions.OfType<FunctionDescription>().ToList();
 
             return new ClassDescription(className, namespaceName, propertiesFound, functionsFound);
-            
-            //// STAGE 3 - EXPERIMENTAL - FIND SPECIFICATION OF MISSING MEMBERS
-            //var dummyFunctions = missingMembers
-            //    .Select(memberName => new FunctionDescription(memberName, typeof(void), new Type[]{}));
-            //var dummyFunctionsOnlyStub = buildFunctionsOnlyStub(namespaceName, className, dummyFunctions);
-            //var dummyFunctionsOnlyTree = CSharpSyntaxTree.ParseText(dummyFunctionsOnlyStub);
-            //var dummyFunctionsCompilation = CSharpCompilation.Create("TestedAssembly")
-            //    .AddReferences(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
-            //    .AddSyntaxTrees(dummyFunctionsOnlyTree)
-            //    .AddSyntaxTrees(tree);
-
-            //var diagnostics = dummyFunctionsCompilation
-            //    .GetDiagnostics()
-            //    .ToList();
-
-            ////var settableProperties = CS1656
-            ////var functions = CS1501
-            ////var functionOrReadonlyProperty = no diagnostic
-
-
-            //var functions = tree.GetFunctionCallsOn(stubCompilation, className);
-
-            //return new ClassDescription(name: className,
-            //    namesp: namespaceName, properties: new PropertyDescription[]{},
-            //    functions: functions);
         }
 
         private object ResolveSettableProperty(string propertyName, AssignmentExpressionSyntax node)
