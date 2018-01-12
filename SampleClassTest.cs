@@ -5,14 +5,14 @@ using Sample.Namespace;
 namespace Sample.Test.Namespace
 {
     [TestClass]
-    public class SampleTest
+    public class SampleClassTest
     {
-        private Sample _sample;
+        private SampleClass _sample;
 
         [TestInitialize]
         public void SetUp()
         {
-            _sample = new Sample();
+            _sample = new SampleClass();
         }
 
         [TestMethod]

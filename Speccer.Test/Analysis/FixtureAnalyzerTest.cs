@@ -13,8 +13,8 @@ namespace Speccer.Test.Analysis
         private static string _sampleTestFile;
 
         private static string FindTestFile(string startPath) => 
-            File.Exists(Path.Combine(startPath, "SampleTest.cs"))
-            ? Path.Combine(startPath, "SampleTest.cs")
+            File.Exists(Path.Combine(startPath, "SampleClassTest.cs"))
+            ? Path.Combine(startPath, "SampleClassTest.cs")
             : FindTestFile(Path.Combine(startPath, ".."));
 
         [ClassInitialize]
@@ -46,7 +46,7 @@ namespace Speccer.Test.Analysis
         public void parses_name()
         {
             var description = _analyzer.ExtractSpecification(_sampleTestFile);
-            Assert.AreEqual("Sample", description.Name);
+            Assert.AreEqual("SampleClass", description.Name);
         }
 
         [TestMethod]
