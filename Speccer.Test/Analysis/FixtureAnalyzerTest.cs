@@ -50,7 +50,6 @@ namespace Speccer.Test.Analysis
         }
 
         [TestMethod]
-        [Ignore]
         public void finds_functions()
         {
             var description = _analyzer.ExtractSpecification(_sampleTestFile);
@@ -58,7 +57,6 @@ namespace Speccer.Test.Analysis
         }
 
         [TestMethod]
-        [Ignore]
         public void finds_function_names()
         {
             var description = _analyzer.ExtractSpecification(_sampleTestFile);
@@ -67,7 +65,6 @@ namespace Speccer.Test.Analysis
         }
 
         [TestMethod]
-        [Ignore]
         public void default_function_return_type_is_void()
         {
             var description = _analyzer.ExtractSpecification(_sampleTestFile);
@@ -107,7 +104,6 @@ namespace Speccer.Test.Analysis
         }
 
         [TestMethod]
-        [Ignore]
         public void finds_properties()
         {
             var description = _analyzer.ExtractSpecification(_sampleTestFile);
@@ -115,7 +111,6 @@ namespace Speccer.Test.Analysis
         }
 
         [TestMethod]
-        [Ignore]
         public void finds_property_name()
         {
             var description = _analyzer.ExtractSpecification(_sampleTestFile);
@@ -124,7 +119,6 @@ namespace Speccer.Test.Analysis
         }
 
         [TestMethod]
-        [Ignore]
         public void property_is_readonly_by_default()
         {
             var description = _analyzer.ExtractSpecification(_sampleTestFile);
@@ -132,7 +126,6 @@ namespace Speccer.Test.Analysis
         }
 
         [TestMethod]
-        [Ignore]
         public void recognizes_settable_properties()
         {
             var description = _analyzer.ExtractSpecification(_sampleTestFile);
@@ -148,7 +141,6 @@ namespace Speccer.Test.Analysis
         }
 
         [TestMethod]
-        [Ignore]
         public void property_is_object_by_default()
         {
             var description = _analyzer.ExtractSpecification(_sampleTestFile);
