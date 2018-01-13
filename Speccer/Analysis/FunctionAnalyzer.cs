@@ -16,7 +16,12 @@ namespace Speccer.Analysis
                 returnType = predefinedType.Keyword.Value.ToString();
             }
 
-            return new FunctionDescription(functionName, returnType, new string[] { });
+            var numberOfArguments = GetNumberOfArguments(node);
+            var arguments = new [] {"int"}.Cycle().Take(numberOfArguments);
+
+            return new FunctionDescription(functionName, returnType, arguments);
         }
+
+        public static int GetNumberOfArguments(InvocationExpressionSyntax node) => node.ArgumentList.Arguments.Count;
     }
 }
