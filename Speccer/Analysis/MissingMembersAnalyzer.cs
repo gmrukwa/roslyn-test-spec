@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -17,17 +18,21 @@ namespace Speccer.Analysis
 
             // We've spotted that such a context information usually describes the usage,
             // like function invocation or member access.
-            var parentsOfParentsOfParents = tokens.Select(token => token.Parent.Parent.Parent);
+            var parentsOfParentsOfParents = tokens.SelectMany(tokenOccurencies => tokenOccurencies.Select(namedToken => new Tuple<string, SyntaxNode>(namedToken.Item1, namedToken.Item2.Parent.Parent.Parent)));
 
             var semanticModel = stubCompilation.GetSemanticModel(tree);
             // Resolving named member context by node
-            var descriptions = memberNames
-                .Zip(parentsOfParentsOfParents,
-                    (name, node) => ResolveMemberType(name, node, semanticModel))
-                .ToList();
+            var descriptions =
+                parentsOfParentsOfParents.Select(
+                        namedNode => ResolveMemberType(namedNode.Item1, namedNode.Item2, semanticModel))
+                    .ToList();
+            //var descriptions = memberNames
+            //    .Zip(parentsOfParentsOfParents,
+            //        (name, node) => ResolveMemberType(name, node, semanticModel))
+            //    .ToList();
 
-            var propertiesFound = descriptions.OfType<PropertyDescription>().ToList();
-            var functionsFound = descriptions.OfType<FunctionDescription>().ToList();
+            var propertiesFound = descriptions.OfType<PropertyDescription>().Combine().ToList();
+            var functionsFound = descriptions.OfType<FunctionDescription>().Combine().ToList();
 
             return (propertiesFound, functionsFound);
         }

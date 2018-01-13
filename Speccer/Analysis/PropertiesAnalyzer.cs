@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -32,6 +33,23 @@ namespace Speccer.Analysis
             }
 
             return new PropertyDescription(propertyName, returnType, false);
+        }
+
+        public static List<PropertyDescription> Combine(this IEnumerable<PropertyDescription> propertiesInfo)
+        {
+            var properties = propertiesInfo.ToList();
+            var names = properties.Select(property => property.Name).Distinct().ToList();
+            return names.Select(propertyName =>
+            {
+                var allInfoAboutProperty = properties.Where(property => property.Name == propertyName).ToList();
+
+                var recognizedTypes = allInfoAboutProperty.Select(info => info.Type);
+                var type = recognizedTypes.FirstOrDefault(propertyType => propertyType != "object") ?? "object";
+
+                var isSettable = allInfoAboutProperty.Any(info => info.HasSetter);
+
+                return new PropertyDescription(propertyName, type, isSettable);
+            }).ToList();
         }
     }
 }
