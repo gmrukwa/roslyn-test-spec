@@ -8,7 +8,7 @@ namespace Speccer.Generation
 {
     public class ClassGenerator
     {
-        private ClassDescription _classDescription;
+        private readonly ClassDescription _classDescription;
         private int _tabsAmount;
 
         public ClassGenerator(ClassDescription classDescription)
@@ -21,6 +21,7 @@ namespace Speccer.Generation
             StringBuilder sb = new StringBuilder();
             _tabsAmount = 0;
 
+            DefaultUsings(sb);
             BeginNamespace(sb, _classDescription.Namespace);
             BeginClass(sb, _classDescription.Name);
 
@@ -61,6 +62,11 @@ namespace Speccer.Generation
         {
             _tabsAmount--;
             AppendLine(strBuilder, "}");
+        }
+
+        private void DefaultUsings(StringBuilder strBuilder)
+        {
+            AppendLine(strBuilder, "using System;");
         }
 
         private void BeginNamespace(StringBuilder strBuilder, string namespaceString)

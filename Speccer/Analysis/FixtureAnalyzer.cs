@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
+using System.Globalization;
+using System.IO;
 using System.Linq;
-using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
 using Speccer.Description;
 using Speccer.Generation;
 
@@ -30,13 +29,22 @@ namespace Speccer.Analysis
             var emptyClassStub = buildTemporaryStub(namespaceName, className);
             var stubTree = CSharpSyntaxTree.ParseText(emptyClassStub);
 
-            var stubCompilation = CSharpCompilation.Create("TestedAssembly")
-                .AddReferences(
-                    MetadataReference.CreateFromFile(
-                        typeof(object).Assembly.Location))
-                .AddSyntaxTrees(stubTree)
-                .AddSyntaxTrees(tree);
-
+            var assemblies = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES"))
+                .Split(Path.PathSeparator)
+                .Where(path => path.EndsWith(".dll"))
+                .Select(path => MetadataReference.CreateFromFile(path))
+                .ToList();
+            var options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
+            var stubCompilation = CSharpCompilation.Create(
+                "TestedAssembly.dll",
+                references: assemblies,
+                syntaxTrees: new[]
+                {
+                    stubTree,
+                    tree
+                },
+                options: options);
+            
             var missingMembers = stubCompilation
                 .GetDiagnostics()
                 .Where(diagnostic => diagnostic.Id == "CS1061")
@@ -77,7 +85,7 @@ namespace Speccer.Analysis
         private static object ResolveFunctionInvocation(string functionName, InvocationExpressionSyntax node)
         {
             var returnType = "void";
-            var varDeclaration = node.Ancestors().OfType<VariableDeclarationSyntax>().First();
+            var varDeclaration = node.Ancestors().OfType<VariableDeclarationSyntax>().FirstOrDefault();
             if (varDeclaration != null)
             {
                 var predefinedType = varDeclaration.ChildNodes().OfType<PredefinedTypeSyntax>().First();
