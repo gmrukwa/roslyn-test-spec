@@ -17,7 +17,7 @@ namespace Speccer.Analysis
             }
 
             var numberOfArguments = GetNumberOfArguments(node);
-            var arguments = new [] {"int"}.Cycle().Take(numberOfArguments);
+            var arguments = new [] {"object"}.Cycle().Take(numberOfArguments);
 
             return new FunctionDescription(functionName, returnType, arguments);
         }
