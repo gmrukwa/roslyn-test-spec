@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Speccer.Description;
 using Speccer.Generation;
 
@@ -15,18 +9,10 @@ namespace Speccer.Analysis
     {
         public static ClassDescription ExtractSpecification(string testFixture)
         {
-            // STAGE 1 - RESOLVE CLASS & NAMESPACE NAME
             var tree = CSharpSyntaxTree.ParseText(testFixture);
-            var root = (CompilationUnitSyntax)tree.GetRoot();
 
-            var compilation = CSharpCompilation.Create("HelloWorld")
-                .AddReferences(
-                    MetadataReference.CreateFromFile(
-                        typeof(object).Assembly.Location))
-                .AddSyntaxTrees(tree);
-
-            var semanticModel = compilation.GetSemanticModel(tree);
-
+            // STAGE 1 - RESOLVE CLASS & NAMESPACE NAME
+            // Here we extract the name of tested class and name of its namespace
             var namespaceName = NamespaceAnalyzer
                 .ExtractFixtureNamespace(tree)
                 .ToModuleNamespace();
@@ -35,108 +21,24 @@ namespace Speccer.Analysis
                 .ToTargetClassName();
 
             // STAGE 2 - FIND MISSING MEMBERS
-            var emptyClassStub = buildTemporaryStub(namespaceName, className);
-            var stubTree = CSharpSyntaxTree.ParseText(emptyClassStub);
-
-            var assemblies = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES"))
-                .Split(Path.PathSeparator)
-                .Where(path => path.EndsWith(".dll"))
-                .Select(path => MetadataReference.CreateFromFile(path))
-                .ToList();
-            var options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
-            var stubCompilation = CSharpCompilation.Create(
-                "TestedAssembly.dll",
-                references: assemblies,
-                syntaxTrees: new[]
-                {
-                    stubTree,
-                    tree
-                },
-                options: options);
-            
-            var missingMembers = stubCompilation
-                .GetDiagnostics()
-                .Where(diagnostic => diagnostic.Id == "CS1061")
-                .Select(GetNameFromDiagnostic)
-                .Distinct()
-                .ToList();
-
+            // Here we create empty class in proper namespace, without any members.
+            // To check, which members are needed, we investigate compilation messages.
+            var emptyClassCompilation = CompileEmptyClass(tree, namespaceName, className);
+            var missingMembers = emptyClassCompilation.GetMissingMembers();
 
             // STAGE 3 - SYNTAX-BASED - FIND SPECIFICATION OF MISSING MEMBERS
-            var tokens = NamesToTokens(tree, missingMembers);
+            (var properties, var functions) = MissingMembersAnalyzer.ResolveMissingMembers(missingMembers, tree, emptyClassCompilation);
 
-            var parentsOfParentsOfParents = tokens.Select(token => token.Parent.Parent.Parent);
-
-            var descriptions = missingMembers.Zip(parentsOfParentsOfParents, (name, node) =>
-            {
-                if (node is AssignmentExpressionSyntax)
-                    return ResolveSettableProperty(name, (AssignmentExpressionSyntax)node, semanticModel);
-                if (node is InvocationExpressionSyntax)
-                    return ResolveFunctionInvocation(name, (InvocationExpressionSyntax)node);
-                return ResolveReadOnlyProperty(name, node, semanticModel);
-            }).ToList();
-            var propertiesFound = descriptions.OfType<PropertyDescription>().ToList();
-            var functionsFound = descriptions.OfType<FunctionDescription>().ToList();
-
-            return new ClassDescription(className, namespaceName, propertiesFound, functionsFound);
+            return new ClassDescription(className, namespaceName, properties, functions);
         }
 
-        private static object ResolveSettableProperty(string propertyName, AssignmentExpressionSyntax node, SemanticModel semanticModel)
-        {
-            var returnType = "object";
-            var varDeclaration = node.Ancestors().OfType<ExpressionStatementSyntax>().FirstOrDefault();
-            if (varDeclaration != null)
-            {
-                var predefinedType = varDeclaration.ChildNodes().OfType<AssignmentExpressionSyntax>().First();
-                returnType = semanticModel.GetTypeInfo(predefinedType.Right).Type.ToString();
-            }
-
-            return new PropertyDescription(propertyName, returnType, true);
-        }
-
-        private static object ResolveFunctionInvocation(string functionName, InvocationExpressionSyntax node)
-        {
-            var returnType = "void";
-            var varDeclaration = node.Ancestors().OfType<VariableDeclarationSyntax>().FirstOrDefault();
-            if (varDeclaration != null)
-            {
-                var predefinedType = varDeclaration.ChildNodes().OfType<PredefinedTypeSyntax>().First();
-                returnType = predefinedType.Keyword.Value.ToString();
-            }
-
-            return new FunctionDescription(functionName, returnType, new string[] { });
-        }
-
-        private static object ResolveReadOnlyProperty(string propertyName, SyntaxNode node, SemanticModel semanticModel)
-        {
-            var returnType = "object";
-            var varDeclaration = node.Ancestors().OfType<ExpressionStatementSyntax>().FirstOrDefault();
-            if (varDeclaration != null)
-            {
-                var predefinedType = varDeclaration.ChildNodes().OfType<AssignmentExpressionSyntax>().First();
-                returnType = semanticModel.GetTypeInfo(predefinedType.Right).Type.ToString();
-            }
-
-            return new PropertyDescription(propertyName, returnType, false);
-        }
-
-        private static string buildTemporaryStub(string namespaceName, string className)
+        private static CSharpCompilation CompileEmptyClass(SyntaxTree tree, string namespaceName, string className)
         {
             var description = new ClassDescription(className, namespaceName, new PropertyDescription[] { }, new FunctionDescription[] { });
             var generator = new ClassGenerator(description);
-            return generator.GenerateClass();
-        }
-
-        private static string GetNameFromDiagnostic(Diagnostic diagnostic)
-        {
-            var span = diagnostic.Location.SourceSpan;
-            var sourceCode = diagnostic.Location.SourceTree.ToString();
-            return sourceCode.Substring(span.Start, span.Length);
-        }
-
-        private static IEnumerable<SyntaxToken> NamesToTokens(SyntaxTree tree, IEnumerable<string> memberNames)
-        {
-            return memberNames.Select(name => ((CompilationUnitSyntax)tree.GetRoot()).DescendantTokens().First(token => token.Value is string && (string)token.Value == name)).ToList();
+            var emptyClassStub = generator.GenerateClass();
+            var stubTree = CSharpSyntaxTree.ParseText(emptyClassStub);
+            return new[] {tree, stubTree}.Compile();
         }
     }
 }
