@@ -43,7 +43,6 @@ namespace Speccer.Test.Analysis
         }
 
         [TestMethod]
-        [Ignore("Does not find a function in lambda.")]
         public void finds_functions()
         {
             var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
