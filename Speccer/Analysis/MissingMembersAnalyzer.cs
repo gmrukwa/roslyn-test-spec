@@ -35,7 +35,7 @@ namespace Speccer.Analysis
         private static object ResolveMemberType(string name, SyntaxNode node, SemanticModel semanticModel)
         {
             if (node is InvocationExpressionSyntax)
-                return FunctionAnalyzer.ResolveFunctionInvocation(name, (InvocationExpressionSyntax)node);
+                return FunctionAnalyzer.ResolveFunctionInvocation(name, (InvocationExpressionSyntax)node, semanticModel);
             if (node is AssignmentExpressionSyntax)
                 return PropertiesAnalyzer.ResolveSettableProperty(name, (AssignmentExpressionSyntax)node, semanticModel);
             return PropertiesAnalyzer.ResolveReadOnlyProperty(name, node, semanticModel);

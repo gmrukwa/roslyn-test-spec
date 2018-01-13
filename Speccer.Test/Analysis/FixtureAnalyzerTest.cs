@@ -79,7 +79,6 @@ namespace Speccer.Test.Analysis
         }
 
         [TestMethod]
-        [Ignore]
         public void recognizes_argument_type()
         {
             var description = FixtureAnalyzer.ExtractSpecification(_sampleTestFile);
